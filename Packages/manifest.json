@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.2d.common": "2.0.2",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.test-framework": "1.1.16",
     "com.unity.textmeshpro": "2.1.0",
