@@ -17,6 +17,7 @@ namespace ScenarioController.ScenarioEventPlayable.Editor
         {
             scenarioEventStopPlayableClip = target as ScenarioEventStopPlayableClip;
         }
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();

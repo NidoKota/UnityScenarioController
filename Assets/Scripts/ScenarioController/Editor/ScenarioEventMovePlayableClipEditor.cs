@@ -17,6 +17,7 @@ namespace ScenarioController.ScenarioEventPlayable.Editor
         {
             scenarioEventMovePlayableClip = target as ScenarioEventMovePlayableClip;
         }
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
