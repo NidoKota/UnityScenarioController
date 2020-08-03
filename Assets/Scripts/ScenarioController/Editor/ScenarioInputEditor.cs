@@ -211,7 +211,7 @@ namespace ScenarioController.Editor
                             yMin = propertyHight,
                             height = EditorGUIUtility.singleLineHeight
                         };
-                        EditorGUI.HelpBox(helpBoxRect, "Deletes or copies the specified area.", MessageType.None);
+                        EditorGUI.HelpBox(helpBoxRect, "Deletes or Copies the specified area.", MessageType.None);
                         propertyHight = helpBoxRect.yMax + 2;
 
                         Rect minValueRect = new Rect()
