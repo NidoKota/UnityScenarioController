@@ -10,7 +10,7 @@ Unityで台詞の構築、再生ができるプログラムです。
 # 使用方法  
 [UniRx](https://github.com/neuecc/UniRx)が必要です。  
 インストールしてください。  
-サンプルシーンはAssets/Scene/SampleScene.sceneです。  
+サンプルシーンはAssets/Scenes/Sample.unityです。  
 
 # Unityのバージョン  
 現在Unity2019.4.6f1で作成しています。  
