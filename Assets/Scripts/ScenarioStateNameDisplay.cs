@@ -10,7 +10,7 @@ using ScenarioController;
 /// ScenarioDisplayBaseが再生しているScenarioのStateDataを取得して名前を表示する
 /// </summary>
 [RequireComponent(typeof(TMP_Text))]
-public class ScenarioStateaNameDisplay : MonoBehaviour
+public class ScenarioStateNameDisplay : MonoBehaviour
 {
     public ScenarioDisplayBase scenarioDisplay;
 
