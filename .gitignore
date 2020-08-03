@@ -59,5 +59,6 @@ sysinfo.txt
 crashlytics-build.properties
 
 [Aa]ssets/Plugins/
+[Aa]ssets/Plugins.meta
 *.DS_Store
 
