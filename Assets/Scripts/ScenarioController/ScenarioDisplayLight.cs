@@ -220,8 +220,8 @@ namespace ScenarioController
         void SetNextScenario()
         {
             charTimer = 0;
-            characterIndex = -1;
-
+            characterIndex = characterIndexBefore = -1;
+            
             nowScenario = _scenarios.Select((data, index) => (data, index)).First(x => x.index == scenarioIndex).data;
 
             animationData = nowScenario.animationData;
@@ -253,7 +253,7 @@ namespace ScenarioController
         void SetTMPAnimation(int index, float time)
         {
             if (!textInfo.characterInfo[index].isVisible) return;
-            if (time >= maxAnimationTime) return;
+            if (time >= maxAnimationTime) return; //???最初からmaxAnimationTimeを超えていた場合何も表示されない可能性
 
             int materialIndex = textInfo.characterInfo[index].materialReferenceIndex;
             int vertexIndex = textInfo.characterInfo[index].vertexIndex;

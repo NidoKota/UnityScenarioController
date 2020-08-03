@@ -424,7 +424,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 1097474345}
   m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -565,9 +565,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'AAAAAAAAAA
+  m_text: 'CCCCCCCCCC
 
-    AAAAAAAAAA'
+    CCCCCCCCCC'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -928,6 +928,17 @@ MonoBehaviour:
       overrideName: 
       data: {fileID: 11400000, guid: 81ef94a1e849b48bcaccc5ff7cf873b1, type: 2}
       scroll: {x: 0, y: 0}
+    - stateData: {fileID: -8300588759630859973, guid: 095f5e89038eb4ed1a454db80b7c25e1,
+        type: 2}
+      text: 'CCCCCCCCCC
+
+        CCCCCCCCCC'
+      charTime: 0.01
+      animationData: {fileID: 11400000, guid: 531570c525e86384f8b68188ec1ad4cb, type: 2}
+      isOverrideName: 0
+      overrideName: 
+      data: {fileID: 11400000, guid: 095f5e89038eb4ed1a454db80b7c25e1, type: 2}
+      scroll: {x: 0, y: 0}
     - stateData: {fileID: -253073051782481504, guid: 962a4e390204c4a5fb0752746785fb97,
         type: 2}
       text: 'BBBBBBBBBBB
@@ -938,17 +949,6 @@ MonoBehaviour:
       isOverrideName: 0
       overrideName: 
       data: {fileID: 11400000, guid: 962a4e390204c4a5fb0752746785fb97, type: 2}
-      scroll: {x: 0, y: 0}
-    - stateData: {fileID: -8300588759630859973, guid: 095f5e89038eb4ed1a454db80b7c25e1,
-        type: 2}
-      text: 'CCCCCCCCCC
-
-        CCCCCCCCCC'
-      charTime: 0.05
-      animationData: {fileID: 11400000, guid: 531570c525e86384f8b68188ec1ad4cb, type: 2}
-      isOverrideName: 0
-      overrideName: 
-      data: {fileID: 11400000, guid: 095f5e89038eb4ed1a454db80b7c25e1, type: 2}
       scroll: {x: 0, y: 0}
     - stateData: {fileID: 2094813670039154987, guid: 4b2e877f5dcceb7438b2c0cb3f598806,
         type: 2}
