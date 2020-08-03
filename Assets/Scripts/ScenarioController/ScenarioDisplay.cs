@@ -4,14 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using UniRx;
 
 namespace ScenarioController
 {
     /// <summary>
-    /// Scenarioを画面に表示する
+    /// Scenarioを画面に表示する(ScenarioDisplayLightに比べて重い)
     /// </summary>
     [RequireComponent(typeof(CanvasGroup))]
     public class ScenarioDisplay : ScenarioDisplayBase
@@ -181,7 +179,6 @@ namespace ScenarioController
             if (State != state)
             {
                 State = state;
-                if (state == ScenarioDisplayState.Hide) nowScenario = null;
                 ScenarioStateChanged(State);
             }
         }
@@ -304,7 +301,6 @@ namespace ScenarioController
 
         }
 
-
 #if UNITY_EDITOR
         void OnGUI()
         {
@@ -322,22 +318,3 @@ namespace ScenarioController
 #endif
     }
 }
-
-#if UNITY_EDITOR
-namespace ScenarioControllerEditor
-{
-    /// <summary>
-    /// ScenarioDisplayのEditor拡張
-    /// </summary>
-    [UnityEditor.CustomEditor(typeof(ScenarioController.ScenarioDisplay))]
-    public class ScenarioDisplayEditor : UnityEditor.Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            DrawPropertiesExcluding(serializedObject, "m_Script");
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-}
-#endif

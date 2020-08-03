@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace ScenarioController.ScenarioEventPlayable
 {
@@ -23,7 +19,7 @@ namespace ScenarioController.ScenarioEventPlayable
         public override void ProcessFrame(Playable playable, FrameData info, object playerData)
         {
 #if UNITY_EDITOR
-            if (EditorApplication.isPlaying)
+            if (UnityEditor.EditorApplication.isPlaying)
 #endif
             {
                 scenarioDisplayBase = playerData as ScenarioDisplayBase;

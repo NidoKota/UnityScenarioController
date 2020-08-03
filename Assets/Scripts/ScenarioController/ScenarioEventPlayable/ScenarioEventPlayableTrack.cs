@@ -1,12 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace ScenarioController.ScenarioEventPlayable
 {
@@ -35,7 +31,7 @@ namespace ScenarioController.ScenarioEventPlayable
             //Mixerを生成
             ScriptPlayable<ScenarioEventPlayableMixer> mixer = ScriptPlayable<ScenarioEventPlayableMixer>.Create(graph, inputCount);
 #if UNITY_EDITOR
-            if (EditorApplication.isPlaying)
+            if (UnityEditor.EditorApplication.isPlaying)
 #endif
             {
                 //Timelineの再生が終了したらScenarioを強制停止させる

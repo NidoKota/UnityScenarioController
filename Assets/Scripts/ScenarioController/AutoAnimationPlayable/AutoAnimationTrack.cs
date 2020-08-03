@@ -6,10 +6,9 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 using UnityEngine.Animations;
+
 #if UNITY_EDITOR
-using System.Reflection;
 using UnityEditor;
-using UnityEditorInternal;
 #endif
 
 namespace ScenarioController.AutoAnimationPlayable
@@ -22,10 +21,14 @@ namespace ScenarioController.AutoAnimationPlayable
     [TrackBindingType(typeof(Animator))]
     public class AutoAnimationTrack : TrackAsset
     {
+        /// <summary>
+        /// 再生し続けるために使うTimelineの制御下にないPlayableGraph
+        /// </summary>
+        [NonSerialized]
+        public PlayableGraph aapGraph;
         [NonSerialized]
         public int cashedNowClipIndex;
         RuntimeAnimatorController saveRuntimeAnimatorController = default;
-        PlayableGraph aapGraph; //再生し続けるためにTimelineの制御下にないGraphを作る
         Playable playable;
 
         public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount)
@@ -119,24 +122,12 @@ namespace ScenarioController.AutoAnimationPlayable
             }
         }
 
-        List<AnimationClip> animClips = new List<AnimationClip>();
-
-        //AnimationClipで変更された値を元に戻す
-        //AnimationPlayableとほぼ同じ(Humanoidを考慮していない)
-        //AnimationPreviewUtilitiesはTimeline\Runtime\Utilitysの中に入っている
         public override void GatherProperties(PlayableDirector director, IPropertyCollector driver)
         {
             var animator = (Animator)director.GetGenericBinding(this);
-            if (animator == null)
-                return;
+            if (!animator) return;
 
-            animClips = GetClips().Select(x => ((AutoAnimationClip)x.asset).animationClip).ToList();
-
-            Type animationPreviewUtilities = Assembly.Load("Unity.Timeline").GetType("UnityEngine.Timeline.AnimationPreviewUtilities");
-            MethodInfo getBindingsMethod = animationPreviewUtilities.GetMethod("GetBindings", BindingFlags.Public | BindingFlags.Static);
-            MethodInfo previewFromCurvesMethod = animationPreviewUtilities.GetMethod("PreviewFromCurves", BindingFlags.Public | BindingFlags.Static);
-
-            previewFromCurvesMethod.Invoke(null, new object[] { animator.gameObject, getBindingsMethod.Invoke(null, new object[] { animator.gameObject, animClips }) });
+            ScenarioControllerUtility.PreviewFromCurves(animator, GetClips().Select(x => ((AutoAnimationClip)x.asset).animationClip).ToArray());
         }
 
         public int GetClipIndex(AutoAnimationClip clip)
@@ -149,6 +140,7 @@ namespace ScenarioController.AutoAnimationPlayable
                 if (clip == (AutoAnimationClip)((TimelineClip)clips.Current).asset)
                 {
                     index = i;
+                    break;
                 }
             }
             return index;
@@ -156,7 +148,7 @@ namespace ScenarioController.AutoAnimationPlayable
 
         public void SetClipLength(int clipIndex, double duration)
         {
-            GetClips().Select((data, index) => new { data, index }).First(x => x.index == clipIndex).data.duration = duration;
+            GetClips().Select((data, index) => (data, index)).First(x => x.index == clipIndex).data.duration = duration;
         }
 #endif
     }

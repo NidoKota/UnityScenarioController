@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using ScenarioController;
 
+/// <summary>
+/// ScenarioDisplayBaseが再生しているScenarioのstateSpriteを取得してImageに表示する
+/// </summary>
 public class ScenarioStateSpriteDisplay : MonoBehaviour
 {
     public ScenarioDisplayBase scenarioDisplay;
@@ -16,6 +19,10 @@ public class ScenarioStateSpriteDisplay : MonoBehaviour
 
     void Update()
     {
-        image.sprite = scenarioDisplay.nowScenario == null ? null : scenarioDisplay.nowScenario.stateData == null ? null : scenarioDisplay.nowScenario.stateData.stateSprite;
+        try
+        {
+            image.sprite = scenarioDisplay.nowScenario.stateData.stateSprite;
+        }
+        catch { }
     }
 }

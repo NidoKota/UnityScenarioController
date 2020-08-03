@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UniRx;
-using UnityEditor;
 
 namespace ScenarioController
 {
@@ -16,22 +15,22 @@ namespace ScenarioController
     public class ScenarioDisplayLight : ScenarioDisplayBase
     {
         TMP_TextInfo textInfo;
-        CanvasGroup canvasGroup;                          //Scenario全体の親のCanvasGroup
-        ScenarioTMPAnimationData animationData;
-        List<float> tMPAnimationTimes = new List<float>();
+        CanvasGroup canvasGroup;                              //Scenario全体の親のCanvasGroup
+        ScenarioTMPAnimationData animationData;               //現在のScenarioのAnimationData
+        List<float> tMPAnimationTimes = new List<float>(100); //Animationの再生時間のList(100個にしたのは何となく)
 
-        TMP_MeshInfo[] cachedMeshInfo;
+        TMP_MeshInfo[] cachedMeshInfo;                        //MeshInfoのキャッシュ
 
-        IEnumerable<Scenario> _scenarios;                 //現在処理される複数のScenarioのEnumerator
-        IDisposable nextScenarioWaitTimeDis;
+        IEnumerable<Scenario> _scenarios;                     //現在処理される複数のScenarioのEnumerator
+        IDisposable nextScenarioWaitTimeDis;                  //次のScenarioに移行するまでの待機をキャンセルする
 
-        bool nextOnce;                                    //次のScenarioに1度だけ移動できるようにする
-        int characterIndex = -1;                               //今まで表示しているCharacterのIndex
-        int characterIndexBuffer;
-        float charTime;                                   //1文字を表示する時間
-        float charTimer;                                  //文字を表示する処理に使用
-        float maxAnimationTime;
-        //float waitTimer;                                //待機時間の処理に使用
+        bool nextOnce;                                        //次のScenarioに1度だけ移動できるようにする
+        int characterIndex = -1;                              //今まで表示しているCharacterのIndex
+        int characterIndexBefore;                             //前フレームのcharacterIndex
+        float charTime;                                       //1文字を表示する時間
+        float charTimer;                                      //文字を表示する処理に使用
+        float maxAnimationTime;                               //一番長いScenarioTMPAnimationDataの長さ
+        //float waitTimer;                                    //待機時間の処理に使用
 
         void OnEnable()
         {
@@ -76,9 +75,6 @@ namespace ScenarioController
 
         void Update()
         {
-            //流れ
-            //???改行はコマンド扱いではない問題
-            //waitTimeとcharTimeを検索、適応させる方法がわからん
             if (State == ScenarioDisplayState.Work)
             {
                 nextOnce = false;
@@ -123,7 +119,7 @@ namespace ScenarioController
                         if (tmp.text[textInfo.characterInfo[i].index] == '\n' || tmp.text[textInfo.characterInfo[i].index] == ' ') continue;
 
                         //前回のIndexより上(更新した分)を回す
-                        if (i > characterIndexBuffer)
+                        if (i > characterIndexBefore)
                         {
                             if (!animationData.useColorAlphaAnimation) SetTMPAlpha(i, 1);
 
@@ -148,7 +144,7 @@ namespace ScenarioController
                     tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
                 }
 
-                characterIndexBuffer = characterIndex;
+                characterIndexBefore = characterIndex;
             }
         }
 
@@ -221,7 +217,7 @@ namespace ScenarioController
             charTimer = 0;
             characterIndex = -1;
 
-            nowScenario = _scenarios.Select((data, index) => new { data, index }).First(x => x.index == scenarioIndex).data;
+            nowScenario = _scenarios.Select((data, index) => (data, index)).First(x => x.index == scenarioIndex).data;
 
             animationData = nowScenario.animationData;
             if(animationData) maxAnimationTime = nowScenario.animationData.GetMaxAnimationTime();
@@ -242,7 +238,6 @@ namespace ScenarioController
             if (State != state)
             {
                 State = state;
-                if (state == ScenarioDisplayState.Hide) nowScenario = null;
                 ScenarioStateChanged(State);
             }
         }
@@ -321,28 +316,8 @@ namespace ScenarioController
                 GUILayout.Box($"CharTimer : {charTimer:F3}", GUILayout.ExpandWidth(false));
                 GUILayout.Box($"ScenarioIndex : {scenarioIndex}", GUILayout.ExpandWidth(false));
                 GUILayout.Box($"CharacterIndex : {characterIndex}", GUILayout.ExpandWidth(false));
-                //GUILayout.Box($"WaitTimer : {waitTimer:F3}", GUILayout.ExpandWidth(false));
             }
         }
 #endif
     }
 }
-
-#if UNITY_EDITOR
-namespace ScenarioControllerEditor
-{
-    /// <summary>
-    /// ScenarioDisplayLightのEditor拡張
-    /// </summary>
-    [UnityEditor.CustomEditor(typeof(ScenarioController.ScenarioDisplayLight))]
-    public class ScenarioDisplayLightEditor : UnityEditor.Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            DrawPropertiesExcluding(serializedObject, "m_Script");
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-}
-#endif

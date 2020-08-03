@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
-#if UNITY_EDITOR
-using ScenarioController.ScenarioEventPlayable;
-using UnityEditor;
-#endif
 
 namespace ScenarioController.ScenarioEventPlayable
 {
@@ -38,29 +33,3 @@ namespace ScenarioController.ScenarioEventPlayable
         }
     }
 }
-
-#if UNITY_EDITOR
-namespace ScenarioControllerEditor
-{
-    /// <summary>
-    /// ScenarioEventStopPlayableClipのEditor拡張
-    /// </summary>
-    [CustomEditor(typeof(ScenarioEventStopPlayableClip))]
-    public class ScenarioEventStopPlayableClipEditor : Editor
-    {
-        ScenarioEventStopPlayableClip scenarioEventStopPlayableClip;
-        void OnEnable()
-        {
-            scenarioEventStopPlayableClip = target as ScenarioEventStopPlayableClip;
-        }
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            if (scenarioEventStopPlayableClip.finishFiring) EditorGUILayout.HelpBox("発火完了", MessageType.Info);
-            else EditorGUILayout.HelpBox("発火未完了", MessageType.Info);
-            DrawPropertiesExcluding(serializedObject, "m_Script");
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-}
-#endif

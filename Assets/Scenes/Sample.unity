@@ -290,7 +290,7 @@ MonoBehaviour:
   nextScenarioSE: {fileID: 0}
   nextScenarioFadeOut: 1
   nextScenarioWaitTime: 0
-  _InfoDebug: 0
+  _InfoDebug: 1
 --- !u!1 &862680931
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,10 +484,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: '''X'' to Play Scenario
 
-    ''Z'' to Next Scenario
+    ''Z'' to Skip or Next
 
-    ''C'' to Stop
-    Scenario
+    ''C'' to Stop Scenario
 
 '
   m_isRightToLeft: 0

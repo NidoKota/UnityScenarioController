@@ -1,14 +1,15 @@
-﻿using System.Collections;
+﻿using System;
 using System.Linq;
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 namespace ScenarioController
 {
+    /// <summary>
+    /// ScenarioDisplayで文字のアニメーションを行う
+    /// </summary>
     [RequireComponent(typeof(ScenarioDisplay))]
     public class ScenarioTMPAnimation : MonoBehaviour
     {
@@ -16,7 +17,7 @@ namespace ScenarioController
         TextMeshProUGUI tmp;
         TMP_TextInfo textInfo;
         ScenarioTMPAnimationData animationData;
-        List<float> times = new List<float>();
+        List<float> times = new List<float>(100);
 
         Matrix4x4 matrix;
         Vector3 offset;
@@ -64,7 +65,7 @@ namespace ScenarioController
             //animationDataがセットされたScenarioが再生されている時
             if (scenarioDisplay.State != ScenarioDisplayState.Hide && animationData)
             {
-                //テキストが更新された時
+                //Textが更新された時
                 if (tmp.text != textCache)
                 {
                     tmp.ForceMeshUpdate();

@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Dynamic;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace ScenarioController
 {
     [CreateAssetMenu(menuName = "ScenarioTMPAnimationData", fileName = "ScenarioTMPAnimationData", order = 1000)]
     public class ScenarioTMPAnimationData : ScriptableObject
     {
-        //???Editor拡張の整備を行う
         public bool usePositionYAnimation;
         public AnimationCurve positionYAnimation;
 
