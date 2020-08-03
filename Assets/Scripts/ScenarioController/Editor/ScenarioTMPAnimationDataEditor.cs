@@ -33,6 +33,7 @@ namespace ScenarioController.Editor
             if (scenarioTMPAnimationData.useScaleAllAnimation) flag |= 1 << 2;
             if (scenarioTMPAnimationData.useColorAlphaAnimation) flag |= 1 << 3;
 
+            //use〇〇が変更された時
             if(flag != beforeFlag)
             {
                 excluding.Clear();

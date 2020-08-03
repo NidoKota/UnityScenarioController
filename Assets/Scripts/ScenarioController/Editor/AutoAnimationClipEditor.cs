@@ -21,13 +21,16 @@ namespace ScenarioController.AutoAnimationPlayable.Editor
         {
             serializedObject.Update();
             DrawPropertiesExcluding(serializedObject, "m_Script");
+
             int clipIndex = autoAnimationClip.autoAnimationTrack.GetClipIndex(autoAnimationClip);
             GUILayout.Label($"ClipIndex : {clipIndex}");
+
             if (GUILayout.Button("SetClipLengthForAnimationLength"))
             {
                 float length = autoAnimationClip.animationClip.length;
                 autoAnimationClip.autoAnimationTrack.SetClipLength(clipIndex, length == 0 ? 1 : length);
             }
+
             serializedObject.ApplyModifiedProperties();
         }
     }

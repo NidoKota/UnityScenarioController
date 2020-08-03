@@ -20,7 +20,7 @@ namespace ScenarioController.Editor
         public static void Open(SerializedProperty prop)
         {
             ScenarioTextEditorWindow window = CreateInstance<ScenarioTextEditorWindow>();
-            //Undoで表示バグる
+            //???Undoで表示バグる
             window.ShowAuxWindow();
             window.prop = prop;
             window.so = prop.serializedObject;
