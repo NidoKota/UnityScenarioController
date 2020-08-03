@@ -16,4 +16,8 @@ Unityで台詞の構築、再生ができるプログラムです。
 現在Unity2019.4.6f1で作成しています。  
   
 # ライセンス
+このプログラムのライセンス
 [MIT License](https://github.com/NidoKota/UnityScenarioController/blob/master/LICENSE)  
+
+サンプルに使ったUnityChanの画像のライセンス
+© UTJ/UCL
