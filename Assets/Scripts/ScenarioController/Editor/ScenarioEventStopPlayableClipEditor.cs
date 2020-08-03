@@ -23,8 +23,8 @@ namespace ScenarioController.ScenarioEventPlayable.Editor
         {
             serializedObject.Update();
 
-            if (scenarioEventStopPlayableClip.finishFiring) EditorGUILayout.HelpBox("発火完了", MessageType.Info);
-            else EditorGUILayout.HelpBox("発火未完了", MessageType.Info);
+            if (scenarioEventStopPlayableClip.finishFiring) EditorGUILayout.HelpBox("Fired", MessageType.Info);
+            else EditorGUILayout.HelpBox("NotFired", MessageType.Info);
 
             DrawPropertiesExcluding(serializedObject, "m_Script");
 

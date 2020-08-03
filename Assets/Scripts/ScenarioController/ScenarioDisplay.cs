@@ -29,6 +29,7 @@ namespace ScenarioController
         {
             canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.alpha = 0;
+            scenarioIndex = -1;
         }
 
         public override void PlayScenario(params Scenario[] scenarios)
@@ -64,6 +65,8 @@ namespace ScenarioController
             Fade.FadeForceStop(canvasGroup);
             Fade.FadeForceStop(tmp);
             submitOnce = true;
+            scenarioIndex = -1;
+            nowScenario = default;
 
             SetScenarioDisplayState(ScenarioDisplayState.Hide);
         }
@@ -138,6 +141,8 @@ namespace ScenarioController
                 //Scenarioの表示を終わらせる
                 else
                 {
+                    scenarioIndex = -1;
+                    nowScenario = default;
                     submitOnce = true;
                     if (nextScenarioSE) nextScenarioSE.PlayOneShot(nextScenarioSE.clip);
                     Fade.FadeOut(canvasGroup).Subscribe(x =>

@@ -24,7 +24,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
-  m_Name: "\u306A\u3057"
+  m_Name: null
   m_EditorClassIdentifier: 
   _ParentAsset: {fileID: 11400000}
   stateSprite: {fileID: 0}

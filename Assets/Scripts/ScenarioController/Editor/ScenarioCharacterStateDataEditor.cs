@@ -62,7 +62,7 @@ namespace ScenarioController.Editor
             //同じ名前だとエラー
             if (_ParentAssetProp.objectReferenceValue.name == nameChecker)
             {
-                EditorGUILayout.HelpBox("SubAssetを親と同じ名前にできません", MessageType.Error);
+                EditorGUILayout.HelpBox("Don't use ParentAsset name!", MessageType.Error);
                 edit = false;
             }
 
