@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc50cbf16097b634cb794498b091a0ca, type: 3}
+  m_Name: Null
+  m_EditorClassIdentifier: 
+  _SubAssets:
+  - {fileID: 2094813670039154987}
+--- !u!114 &2094813670039154987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
+  m_Name: "\u306A\u3057"
+  m_EditorClassIdentifier: 
+  _ParentAsset: {fileID: 11400000}
+  stateSprite: {fileID: 0}
