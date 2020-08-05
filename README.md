@@ -1,7 +1,7 @@
 # UnityScenarioController
+※開発中につき、破壊的変更を行う可能性があります。  
 
 # 概要  
-  
 [動画](https://twitter.com/NidoKota/status/1243830552127406080)  
   
 Unityで台詞の構築、再生ができるプログラムです。  
@@ -16,8 +16,8 @@ Unityで台詞の構築、再生ができるプログラムです。
 現在Unity2019.4.6f1で作成しています。  
   
 # ライセンス
-このプログラムのライセンス  
-[MIT License](https://github.com/NidoKota/UnityScenarioController/blob/master/LICENSE)  
-
 サンプルに使ったUnityChanの画像のライセンス  
 © UTJ/UCL  
+  
+このプログラムのライセンス  
+[MIT License](https://github.com/NidoKota/UnityScenarioController/blob/master/LICENSE)  
