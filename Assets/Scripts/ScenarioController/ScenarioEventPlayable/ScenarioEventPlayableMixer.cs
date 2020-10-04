@@ -35,7 +35,7 @@ namespace ScenarioController.ScenarioEventPlayable
                             if (!scenarioEventStopPlayableClip.finishFiring)
                             {
                                 //一応警告しているがさほど問題はない
-                                if (director.time >= clip.end) Debug.LogWarning("Timelineで処理落ちが発生しました");
+                                //if (director.time >= clip.end) Debug.LogWarning("Timelineで処理落ちが発生しました");
 
                                 //Timelineの再生を一時停止させる(停止させるとCinemachineの動作が停止してしまうため)
                                 director.playableGraph.GetRootPlayable(0).SetSpeed(0);

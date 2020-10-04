@@ -49,7 +49,7 @@ namespace ScenarioController
             //既にScenarioが表示されている場合
             if (State != ScenarioDisplayState.Hide)
             {
-                Debug.LogError($"Scenarioの表示中に新たなScenarioの表示が開始されました\nScenarioの内容 : {scenarios.First().text}");
+                Debug.LogError($"A new Scenario is now displayed when the old Scenario is displayed!\nScenario content : {scenarios.First().text}");
                 ForceStop();
             }
             textInfo = tmp.textInfo;
