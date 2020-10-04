@@ -58,8 +58,12 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-# 個人的に消したい奴
+*.DS_Store
+
+# 公開する以上同期させられない
 [Aa]ssets/Plugins/UniRx/
 [Aa]ssets/Plugins/UniRx.meta
-*.DS_Store
+
+# Riderのtmp
+*.idea
 
