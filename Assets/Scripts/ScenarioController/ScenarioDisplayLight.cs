@@ -25,6 +25,7 @@ namespace ScenarioController
         IDisposable nextScenarioWaitTimeDis;                  //次のScenarioに移行するまでの待機をキャンセルする
 
         bool nextOnce;                                        //次のScenarioに1度だけ移動できるようにする
+        bool showComplete;                                    //
         int characterIndex = -1;                              //今まで表示しているCharacterのIndex
         int characterIndexBefore;                             //前フレームのcharacterIndex
         float charTime;                                       //1文字を表示する時間
@@ -82,44 +83,47 @@ namespace ScenarioController
             {
                 nextOnce = false;
 
-                charTimer += Time.deltaTime;
-
-                //charTimerをcharTimeで何回割れるか考えるのと同じ
-                while (charTimer >= charTime)
+                if (!showComplete)
                 {
-                    charTimer -= charTime;
-                    if (characterIndex >= textInfo.characterCount - 1) break;
-                    ++characterIndex;
-                    if (charSE) charSE.PlayOneShot(charSE.clip);
+                    charTimer += Time.deltaTime;
 
-                    //characterIndexが要素内かつ飛ばす文字なら飛ばす
-                    while (textInfo.characterInfo.Within(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == '\n'
-                        || textInfo.characterInfo.Within(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == ' ')
+                    //charTimerをcharTimeで何回割れるか考えるのと同じ
+                    while (charTimer >= charTime)
                     {
+                        charTimer -= charTime;
+                        if (characterIndex >= textInfo.characterCount - 1) break;
                         ++characterIndex;
+                        if (charSE) charSE.PlayOneShot(charSE.clip);
+
+                        //書き出すと挙動が変わる謎のバグがあるので外す
+                        //characterIndexが要素内かつ飛ばす文字なら飛ばす
+                        /*while (TMPCharacterIndexWithin(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == '\n'
+                               || TMPCharacterIndexWithin(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == ' ')
+                        {
+                            ++characterIndex;
+                        }*/
                     }
+
+                    //characterIndexの数が増えすぎないよう調整
+                    characterIndex = Mathf.Clamp(characterIndex, -1, textInfo.characterCount - 1);
+                    
+                    if (characterIndex >= textInfo.characterCount - 1) showComplete = true;
                 }
 
-                //characterIndexの数が増えすぎないよう調整
-                characterIndex = Mathf.Clamp(characterIndex, -1, textInfo.characterCount - 1);
-                
-                if (characterIndex >= textInfo.characterCount - 1) SetScenarioDisplayState(ScenarioDisplayState.Wait);
-            }
-
-            //???アニメーションの処理が必要な状態かどうかを判断すべき？
-            if (State == ScenarioDisplayState.Work || State == ScenarioDisplayState.Wait)
-            {
                 //アニメーションデータがある場合
                 if (animationData)
                 {
                     //tMPAnimationTimesの要素にアクセスする際、要素番号を飛ばさないために使用
                     int tMPAnimationTimesIndex = 0;
 
+                    bool finishAnimation = false;
+
                     //0から今まで表示しているCharacterのIndexまで回す
-                    for (int i = 0; textInfo.characterInfo.Within(characterIndex) && i <= characterIndex; i++)
+                    for (int i = 0; i <= characterIndex; i++)
                     {
+                        //書き出すと挙動が変わる謎のバグがあるので外す
                         //飛ばす文字なら飛ばす
-                        if (tmp.text[textInfo.characterInfo[i].index] == '\n' || tmp.text[textInfo.characterInfo[i].index] == ' ') continue;
+                        //if (tmp.text[textInfo.characterInfo[i].index] == '\n' || tmp.text[textInfo.characterInfo[i].index] == ' ') continue;
 
                         //前回のIndexより上(更新した分)を回す
                         if (i > characterIndexBefore)
@@ -130,21 +134,27 @@ namespace ScenarioController
                             tMPAnimationTimes.Insert(tMPAnimationTimesIndex, Time.time);
                         }
 
-                        SetTMPAnimation(i, Time.time - tMPAnimationTimes[tMPAnimationTimesIndex]);
-
-                        if (animationData.usePositionYAnimation || animationData.useRotationZAnimation || animationData.useScaleAllAnimation)
-                            tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
-
+                        float animationTime = Time.time - tMPAnimationTimes[tMPAnimationTimesIndex];
+                        
+                        SetTMPAnimation(i, animationTime);
+                        if (animationData.usePositionYAnimation || animationData.useRotationZAnimation || animationData.useScaleAllAnimation) tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
                         tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+
+                        finishAnimation = animationTime >= maxAnimationTime;
 
                         tMPAnimationTimesIndex++;
                     }
+                    
+                    //全ての文字が表示されたかつ全てのアニメーションが終わった時
+                    if(finishAnimation && showComplete) SetScenarioDisplayState(ScenarioDisplayState.Wait);
                 }
                 //アニメーションデータがない場合
                 else
                 {
                     for (int i = 0; 0 <= characterIndex && i <= characterIndex; i++) SetTMPAlpha(i, 1);
                     tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+                    
+                    if(showComplete) SetScenarioDisplayState(ScenarioDisplayState.Wait);
                 }
 
                 characterIndexBefore = characterIndex;
@@ -219,6 +229,8 @@ namespace ScenarioController
         /// </summary>
         void SetNextScenario()
         {
+            showComplete = false;
+            
             charTimer = 0;
             characterIndex = characterIndexBefore = -1;
             
@@ -231,8 +243,9 @@ namespace ScenarioController
             tmp.SetText(nowScenario.text);
             //いらん可能性あり
             tmp.ForceMeshUpdate();
+            
             //初めはすべて透明にする
-            for (int i = 0; i < tmp.text.Length; i++) SetTMPAlpha(i, 0);
+            for (int i = 0; i < textInfo.characterCount; i++) SetTMPAlpha(i, 0);
             tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
 
             cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
@@ -253,7 +266,6 @@ namespace ScenarioController
         void SetTMPAnimation(int index, float time)
         {
             if (!textInfo.characterInfo[index].isVisible) return;
-            if (time >= maxAnimationTime) return; //???最初からmaxAnimationTimeを超えていた場合何も表示されない可能性
 
             int materialIndex = textInfo.characterInfo[index].materialReferenceIndex;
             int vertexIndex = textInfo.characterInfo[index].vertexIndex;
@@ -286,10 +298,17 @@ namespace ScenarioController
 
                 float animColorAlpha = animationData.colorAlphaAnimation.Evaluate(time);
 
-                destinationColors[vertexIndex + 0] = new Color(destinationColors[vertexIndex + 0].r, destinationColors[vertexIndex + 0].g, destinationColors[vertexIndex + 0].b, animColorAlpha);
-                destinationColors[vertexIndex + 1] = new Color(destinationColors[vertexIndex + 1].r, destinationColors[vertexIndex + 1].g, destinationColors[vertexIndex + 1].b, animColorAlpha);
-                destinationColors[vertexIndex + 2] = new Color(destinationColors[vertexIndex + 2].r, destinationColors[vertexIndex + 2].g, destinationColors[vertexIndex + 2].b, animColorAlpha);
-                destinationColors[vertexIndex + 3] = new Color(destinationColors[vertexIndex + 3].r, destinationColors[vertexIndex + 3].g, destinationColors[vertexIndex + 3].b, animColorAlpha);
+                //ここで色を保管する必要がある
+                //(１つ変更したら全部リセットされる実装っぽい?)
+                Color colorBefore0 = destinationColors[vertexIndex + 0];
+                Color colorBefore1 = destinationColors[vertexIndex + 1];
+                Color colorBefore2 = destinationColors[vertexIndex + 2];
+                Color colorBefore3 = destinationColors[vertexIndex + 3];
+                
+                destinationColors[vertexIndex + 0] = new Color(colorBefore0.r, colorBefore0.g, colorBefore0.b, animColorAlpha);
+                destinationColors[vertexIndex + 1] = new Color(colorBefore1.r, colorBefore1.g, colorBefore1.b, animColorAlpha);
+                destinationColors[vertexIndex + 2] = new Color(colorBefore2.r, colorBefore2.g, colorBefore2.b, animColorAlpha);
+                destinationColors[vertexIndex + 3] = new Color(colorBefore3.r, colorBefore3.g, colorBefore3.b, animColorAlpha);
             }
         }
 
@@ -302,12 +321,24 @@ namespace ScenarioController
             
             int vertexIndex = textInfo.characterInfo[index].vertexIndex;
             Color32[] destinationColors = textInfo.meshInfo[textInfo.characterInfo[index].materialReferenceIndex].colors32;
+            
+            Color colorBefore0 = destinationColors[vertexIndex + 0];
+            Color colorBefore1 = destinationColors[vertexIndex + 1];
+            Color colorBefore2 = destinationColors[vertexIndex + 2];
+            Color colorBefore3 = destinationColors[vertexIndex + 3];
 
-            //???tmp.colorが白と黒以外の場合、うまく適応されない問題
-            destinationColors[vertexIndex + 0] = new Color(destinationColors[vertexIndex + 0].r, destinationColors[vertexIndex + 0].g, destinationColors[vertexIndex + 0].b, alpha);
-            destinationColors[vertexIndex + 1] = new Color(destinationColors[vertexIndex + 1].r, destinationColors[vertexIndex + 1].g, destinationColors[vertexIndex + 1].b, alpha);
-            destinationColors[vertexIndex + 2] = new Color(destinationColors[vertexIndex + 2].r, destinationColors[vertexIndex + 2].g, destinationColors[vertexIndex + 2].b, alpha);
-            destinationColors[vertexIndex + 3] = new Color(destinationColors[vertexIndex + 3].r, destinationColors[vertexIndex + 3].g, destinationColors[vertexIndex + 3].b, alpha);
+            destinationColors[vertexIndex + 0] = new Color(colorBefore0.r, colorBefore0.g, colorBefore0.b, alpha);
+            destinationColors[vertexIndex + 1] = new Color(colorBefore1.r, colorBefore1.g, colorBefore1.b, alpha);
+            destinationColors[vertexIndex + 2] = new Color(colorBefore2.r, colorBefore2.g, colorBefore2.b, alpha);
+            destinationColors[vertexIndex + 3] = new Color(colorBefore3.r, colorBefore3.g, colorBefore3.b, alpha);
+        }
+
+        /// <summary>
+        /// indexがcharacterCountの中に含まれているかどうか
+        /// </summary>
+        bool TMPCharacterIndexWithin(int index)
+        {
+            return textInfo.characterCount > index && index >= 0;
         }
 
 #if UNITY_EDITOR
