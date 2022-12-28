@@ -14,7 +14,7 @@ Unityで台詞の構築、再生ができるプログラムです。
 サンプルシーンはAssets/Scenes/Sample.unityです。  
 
 # Unityのバージョン  
-現在Unity2019.4.6f1で作成しています。  
+現在Unity2021.3.15で作成しています。  
   
 # ライセンス
 サンプルに使ったUnityChanの画像のライセンス  
