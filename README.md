@@ -1,6 +1,7 @@
 ※プログラムを勉強しながら作成したので、かなり非効率で計算が多い仕組みになっている箇所があります。
 
-# UnityScenarioController
+# UnityScenarioController 
+<img width="350" alt="" src="https://user-images.githubusercontent.com/36328961/209782765-67aed765-ccad-4b77-b4f1-988c42eda61c.png"><br>
 ※開発中につき、破壊的変更を行う可能性があります。  
 
 # 概要  
@@ -10,8 +11,6 @@ Unityで台詞の構築、再生ができるプログラムです。
 ※一部動画の内容で未実装の機能があります。  
 
 # 使用方法  
-[UniRx](https://github.com/neuecc/UniRx)が必要です。  
-インストールしてください。  
 サンプルシーンはAssets/Scenes/Sample.unityです。  
 
 # Unityのバージョン  
