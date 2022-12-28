@@ -60,10 +60,6 @@ crashlytics-build.properties
 
 *.DS_Store
 
-# 公開する以上同期させられない
-[Aa]ssets/Plugins/UniRx/
-[Aa]ssets/Plugins/UniRx.meta
-
-# Riderのtmp
+# Rider
 *.idea
 

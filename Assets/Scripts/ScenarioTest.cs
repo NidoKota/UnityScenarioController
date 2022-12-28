@@ -10,12 +10,12 @@ using ScenarioController;
 /// </summary>
 public class ScenarioTest : MonoBehaviour
 {
-    public ScenarioInput input;
+    [SerializeField] private ScenarioInput _input;
 
-    void Update()
+    private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.X)) input.PlayScenario();
-        if (Input.GetKeyDown(KeyCode.Z)) input.scenarioDisplayBase.Next();
-        if (Input.GetKeyDown(KeyCode.C)) input.scenarioDisplayBase.ForceStop();
+        if (Input.GetKeyDown(KeyCode.X)) _input.PlayScenario();
+        if (Input.GetKeyDown(KeyCode.Z)) _input.ScenarioDisplayBase.Next();
+        if (Input.GetKeyDown(KeyCode.C)) _input.ScenarioDisplayBase.ForceStop();
     }
 }

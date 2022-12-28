@@ -8,6 +8,8 @@ using UniRx;
 
 namespace ScenarioController
 {
+    // TODO リファクタリング
+    
     /// <summary>
     /// Scenarioを画面に表示する(軽量版)
     /// </summary>
@@ -15,24 +17,21 @@ namespace ScenarioController
     public class ScenarioDisplayLight : ScenarioDisplayBase
     {
         TMP_TextInfo textInfo;
-        CanvasGroup canvasGroup;                              //Scenario全体の親のCanvasGroup
-        ScenarioTMPAnimationData animationData;               //現在のScenarioのAnimationData
-        List<float> tMPAnimationTimes = new List<float>(100); //Animationの再生時間のList(100個にしたのは何となく)
-
-        TMP_MeshInfo[] cachedMeshInfo;                        //MeshInfoのキャッシュ
-
-        IEnumerable<Scenario> _scenarios;                     //現在処理される複数のScenarioのEnumerator
-        IDisposable nextScenarioWaitTimeDis;                  //次のScenarioに移行するまでの待機をキャンセルする
-
-        bool nextOnce;                                        //次のScenarioに1度だけ移動できるようにする
-        bool showComplete;                                    //
-        int characterIndex = -1;                              //今まで表示しているCharacterのIndex
-        int characterIndexBefore;                             //前フレームのcharacterIndex
-        float charTime;                                       //1文字を表示する時間
-        float charTimer;                                      //文字を表示する処理に使用
-        float maxAnimationTime;                               //一番長いScenarioTMPAnimationDataの長さ
-        //float waitTimer;                                    //待機時間の処理に使用
-
+        CanvasGroup canvasGroup;                                      //Scenario全体の親のCanvasGroup
+        TextAnimationData nowAnimationData;                           //現在のScenarioのAnimationData
+        List<float> tMPAnimationTimes = new List<float>(100);         //Animationの再生時間のList
+        TMP_MeshInfo[] cachedMeshInfo;                                //MeshInfoのキャッシュ
+        IObservable<long> nextScenarioWaitTimer;                      //
+        IDisposable nextScenarioWaitTimerDis;                         //次のScenarioに移行するまでの待機をキャンセルする
+        bool nextOnce;                                                //次のScenarioに1度だけ移動できるようにする
+        bool showComplete;                                            //文字の表示が終わったかどうか(Animationは含まない)
+        int characterIndex = -1;                                      //今まで表示しているCharacterのIndex
+        int characterIndexBefore;                                     //前フレームのcharacterIndex
+        float charTime;                                               //1文字を表示する時間
+        float charTimer;                                              //文字を表示する処理に使用
+        float maxAnimationTime;                                       //一番長いScenarioTMPAnimationDataの長さ
+        //float waitTimer;                                            //待機時間の処理に使用
+        
         void OnEnable()
         {
             canvasGroup = GetComponent<CanvasGroup>();
@@ -40,23 +39,30 @@ namespace ScenarioController
             scenarioIndex = -1;
         }
 
-        public override void PlayScenario(params Scenario[] scenarios)
+        void Start()
         {
-            PlayScenario((IEnumerable<Scenario>)scenarios);
+            nextScenarioWaitTimer = Observable.Timer(TimeSpan.FromSeconds(nextScenarioWaitTime));
+            Observable.EveryUpdate().Where(x => State == ScenarioDisplayState.Work).Subscribe(WorkEveryUpdate);
         }
 
-        public override void PlayScenario(IEnumerable<Scenario> scenarios)
+        public override void PlayScenario(params ScenarioData[] scenarios)
         {
+            PlayScenario((IEnumerable<ScenarioData>)scenarios);
+        }
+
+        public override void PlayScenario(IEnumerable<ScenarioData> scenarios)
+        {
+            gameObject.SetActive(true);
+            
             //既にScenarioが表示されている場合
             if (State != ScenarioDisplayState.Hide)
             {
-                Debug.LogError($"A new Scenario is now displayed when the old Scenario is displayed!\nScenario content : {scenarios.First().text}");
+                Debug.LogError($"A new Scenario is now displayed when the old Scenario is displayed!\nScenario content : {scenarios.First().Text}");
                 ForceStop();
             }
             textInfo = tmp.textInfo;
-            _scenarios = scenarios;
+            this.scenarios = scenarios;
             scenarioIndex = 0;
-            tMPAnimationTimes.Clear();
             SetNextScenario();
 
             SetScenarioDisplayState(ScenarioDisplayState.Work);
@@ -69,96 +75,96 @@ namespace ScenarioController
         {
             Fade.FadeForceStop(canvasGroup);
             Fade.FadeForceStop(tmp);
-            nextScenarioWaitTimeDis?.Dispose();
+            nextScenarioWaitTimerDis?.Dispose();
             if(canvasGroup) canvasGroup.alpha = 0;
             scenarioIndex = -1;
-            nowScenario = default;
+            currentScenario = default;
 
             SetScenarioDisplayState(ScenarioDisplayState.Hide);
+            gameObject.SetActive(false);
         }
 
-        void Update()
+        void WorkEveryUpdate(long l)
         {
-            if (State == ScenarioDisplayState.Work)
+            nextOnce = false;
+
+            if (!showComplete)
             {
-                nextOnce = false;
+                charTimer += Time.deltaTime;
 
-                if (!showComplete)
+                //charTimerをcharTimeで何回割れるか考えるのと同じ
+                while (charTimer >= charTime)
                 {
-                    charTimer += Time.deltaTime;
+                    if (characterIndex >= textInfo.characterCount - 1) break;
 
-                    //charTimerをcharTimeで何回割れるか考えるのと同じ
-                    while (charTimer >= charTime)
+                    charTimer -= charTime;
+                    characterIndex++;
+
+                    if (charSE) charSE.PlayOneShot(charSE.clip);
+
+                    //書き出すと挙動が変わる謎のバグがあるので外す
+                    //characterIndexが要素内かつ飛ばす文字なら飛ばす
+                    /*while (TMPCharacterIndexWithin(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == '\n'
+                           || TMPCharacterIndexWithin(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == ' ')
                     {
-                        charTimer -= charTime;
-                        if (characterIndex >= textInfo.characterCount - 1) break;
                         ++characterIndex;
-                        if (charSE) charSE.PlayOneShot(charSE.clip);
-
-                        //書き出すと挙動が変わる謎のバグがあるので外す
-                        //characterIndexが要素内かつ飛ばす文字なら飛ばす
-                        /*while (TMPCharacterIndexWithin(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == '\n'
-                               || TMPCharacterIndexWithin(characterIndex) && tmp.text[textInfo.characterInfo[characterIndex].index] == ' ')
-                        {
-                            ++characterIndex;
-                        }*/
-                    }
-
-                    //characterIndexの数が増えすぎないよう調整
-                    characterIndex = Mathf.Clamp(characterIndex, -1, textInfo.characterCount - 1);
-                    
-                    if (characterIndex >= textInfo.characterCount - 1) showComplete = true;
+                    }*/
                 }
 
-                //アニメーションデータがある場合
-                if (animationData)
-                {
-                    //tMPAnimationTimesの要素にアクセスする際、要素番号を飛ばさないために使用
-                    int tMPAnimationTimesIndex = 0;
+                //characterIndexの数が増えすぎないよう調整
+                characterIndex = Mathf.Clamp(characterIndex, -1, textInfo.characterCount - 1);
 
-                    bool finishAnimation = false;
-
-                    //0から今まで表示しているCharacterのIndexまで回す
-                    for (int i = 0; i <= characterIndex; i++)
-                    {
-                        //書き出すと挙動が変わる謎のバグがあるので外す
-                        //飛ばす文字なら飛ばす
-                        //if (tmp.text[textInfo.characterInfo[i].index] == '\n' || tmp.text[textInfo.characterInfo[i].index] == ' ') continue;
-
-                        //前回のIndexより上(更新した分)を回す
-                        if (i > characterIndexBefore)
-                        {
-                            if (!animationData.useColorAlphaAnimation) SetTMPAlpha(i, 1);
-
-                            //現在の時間を格納
-                            tMPAnimationTimes.Insert(tMPAnimationTimesIndex, Time.time);
-                        }
-
-                        float animationTime = Time.time - tMPAnimationTimes[tMPAnimationTimesIndex];
-                        
-                        SetTMPAnimation(i, animationTime);
-                        if (animationData.usePositionYAnimation || animationData.useRotationZAnimation || animationData.useScaleAllAnimation) tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
-                        tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
-
-                        finishAnimation = animationTime >= maxAnimationTime;
-
-                        tMPAnimationTimesIndex++;
-                    }
-                    
-                    //全ての文字が表示されたかつ全てのアニメーションが終わった時
-                    if(finishAnimation && showComplete) SetScenarioDisplayState(ScenarioDisplayState.Wait);
-                }
-                //アニメーションデータがない場合
-                else
-                {
-                    for (int i = 0; 0 <= characterIndex && i <= characterIndex; i++) SetTMPAlpha(i, 1);
-                    tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
-                    
-                    if(showComplete) SetScenarioDisplayState(ScenarioDisplayState.Wait);
-                }
-
-                characterIndexBefore = characterIndex;
+                if (characterIndex >= textInfo.characterCount - 1) showComplete = true;
             }
+
+            //アニメーションデータがある場合
+            if (nowAnimationData)
+            {
+                //tMPAnimationTimesの要素にアクセスする際、要素番号を飛ばさないために使用
+                int tMPAnimationTimesIndex = 0;
+
+                bool finishAnimation = false;
+
+                //0から今まで表示しているCharacterのIndexまで回す
+                for (int i = 0; i <= characterIndex; i++)
+                {
+                    //書き出すと挙動が変わる謎のバグがあるので外す
+                    //飛ばす文字なら飛ばす
+                    //if (tmp.text[textInfo.characterInfo[i].index] == '\n' || tmp.text[textInfo.characterInfo[i].index] == ' ') continue;
+
+                    //前回のIndexより上(更新した分)を回す
+                    if (i > characterIndexBefore)
+                    {
+                        if (!nowAnimationData.UseColorAlphaAnimation) SetTMPAlpha(i, 1);
+
+                        //現在の時間を格納
+                        tMPAnimationTimes.Insert(tMPAnimationTimesIndex, Time.time);
+                    }
+
+                    float animationTime = Time.time - tMPAnimationTimes[tMPAnimationTimesIndex];
+
+                    SetTMPAnimation(i, animationTime);
+                    if (nowAnimationData.UsePositionXAnimation || nowAnimationData.UsePositionYAnimation || nowAnimationData.UseRotationZAnimation || nowAnimationData.UseScaleAllAnimation) tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
+                    tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+
+                    finishAnimation = animationTime >= maxAnimationTime;
+
+                    tMPAnimationTimesIndex++;
+                }
+
+                //全ての文字が表示されたかつ全てのアニメーションが終わった時
+                if (finishAnimation && showComplete) SetScenarioDisplayState(ScenarioDisplayState.Wait);
+            }
+            //アニメーションデータがない場合
+            else
+            {
+                for (int i = 0; 0 <= characterIndex && i <= characterIndex; i++) SetTMPAlpha(i, 1);
+                tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+
+                if (showComplete) SetScenarioDisplayState(ScenarioDisplayState.Wait);
+            }
+
+            characterIndexBefore = characterIndex;
         }
 
         public override bool Next()
@@ -170,11 +176,13 @@ namespace ScenarioController
                     if (nextScenarioSE) nextScenarioSE.PlayOneShot(nextScenarioSE.clip);
 
                     //次のScenarioを表示する
-                    if (scenarioIndex < _scenarios.Count() - 1)
+                    if (scenarioIndex < scenarios.Count() - 1)
                     {
+                        SetScenarioDisplayState(ScenarioDisplayState.Next);
+
                         //文字をフェードする
                         if (nextScenarioFadeOut) Fade.FadeOut(tmp).Subscribe(x => EndWait());
-                        else nextScenarioWaitTimeDis = Observable.Timer(TimeSpan.FromSeconds(nextScenarioWaitTime)).Subscribe(x => EndWait());
+                        else nextScenarioWaitTimerDis = nextScenarioWaitTimer.Subscribe(x => EndWait());
 
                         void EndWait()
                         {
@@ -190,20 +198,22 @@ namespace ScenarioController
                     else
                     {
                         scenarioIndex = -1;
-                        nowScenario = default;
+                        currentScenario = default;
                         if (nextScenarioFadeOut)
                         {
                             Fade.FadeOut(canvasGroup).Subscribe(x =>
                             {
                                 SetScenarioDisplayState(ScenarioDisplayState.Hide);
+                                gameObject.SetActive(false);
                             });
                         }
                         else
                         {
-                            nextScenarioWaitTimeDis = Observable.Timer(TimeSpan.FromSeconds(nextScenarioWaitTime)).Subscribe(x =>
+                            nextScenarioWaitTimerDis = nextScenarioWaitTimer.Subscribe(x =>
                             {
                                 canvasGroup.alpha = 0;
                                 SetScenarioDisplayState(ScenarioDisplayState.Hide);
+                                gameObject.SetActive(false);
                             });
                         }
                     }
@@ -219,6 +229,8 @@ namespace ScenarioController
                 if (cutScenarioSE) cutScenarioSE.PlayOneShot(cutScenarioSE.clip);
                 characterIndex = textInfo.characterCount - 1;
 
+                ScenarioCut();
+
                 return false;
             }
             else return false;
@@ -230,20 +242,21 @@ namespace ScenarioController
         void SetNextScenario()
         {
             showComplete = false;
-            
+
             charTimer = 0;
             characterIndex = characterIndexBefore = -1;
-            
-            nowScenario = _scenarios.Select((data, index) => (data, index)).First(x => x.index == scenarioIndex).data;
+                
+            tMPAnimationTimes.Clear();
 
-            animationData = nowScenario.animationData;
-            if(animationData) maxAnimationTime = nowScenario.animationData.GetMaxAnimationTime();
-            charTime = nowScenario.charTime;
+            currentScenario = scenarios.Select((data, index) => (data, index)).First(x => x.index == scenarioIndex).data;
 
-            tmp.SetText(nowScenario.text);
-            //いらん可能性あり
+            nowAnimationData = currentScenario.AnimationData;
+            if (nowAnimationData) maxAnimationTime = nowAnimationData.GetMaxAnimationTime();
+            charTime = currentScenario.CharTime;
+
+            tmp.SetText(currentScenario.Text);
             tmp.ForceMeshUpdate();
-            
+
             //初めはすべて透明にする
             for (int i = 0; i < textInfo.characterCount; i++) SetTMPAlpha(i, 0);
             tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
@@ -270,17 +283,19 @@ namespace ScenarioController
             int materialIndex = textInfo.characterInfo[index].materialReferenceIndex;
             int vertexIndex = textInfo.characterInfo[index].vertexIndex;
 
-            if (animationData.usePositionYAnimation || animationData.useRotationZAnimation || animationData.useScaleAllAnimation)
+            if (nowAnimationData.UsePositionXAnimation || nowAnimationData.UsePositionYAnimation || nowAnimationData.UseRotationZAnimation || nowAnimationData.UseScaleAllAnimation)
             {
+                float animPosX = 0;
                 float animPosY = 0;
                 float animRotZ = 0;
                 float animScaleAll = 0;
 
-                if (animationData.usePositionYAnimation) animPosY = animationData.positionYAnimation.Evaluate(time);
-                if (animationData.useRotationZAnimation) animRotZ = animationData.rotationZAnimation.Evaluate(time);
-                if (animationData.useScaleAllAnimation) animScaleAll = animationData.scaleAllAnimation.Evaluate(time);
+                if (nowAnimationData.UsePositionXAnimation) animPosX = nowAnimationData.PositionXAnimation.Evaluate(time);
+                if (nowAnimationData.UsePositionYAnimation) animPosY = nowAnimationData.PositionYAnimation.Evaluate(time);
+                if (nowAnimationData.UseRotationZAnimation) animRotZ = nowAnimationData.RotationZAnimation.Evaluate(time);
+                if (nowAnimationData.UseScaleAllAnimation) animScaleAll = nowAnimationData.ScaleAllAnimation.Evaluate(time);
 
-                Matrix4x4 matrix = Matrix4x4.TRS(animationData.addPosition + Vector3.up * animPosY, Quaternion.Euler(animationData.addRotation) * Quaternion.Euler(0, 0, animRotZ), animationData.addScale + Vector3.one * animScaleAll);
+                Matrix4x4 matrix = Matrix4x4.TRS(nowAnimationData.AddPosition + Vector3.up * animPosY + Vector3.right * animPosX, Quaternion.Euler(nowAnimationData.AddRotation) * Quaternion.Euler(0, 0, animRotZ), nowAnimationData.AddScale + Vector3.one * animScaleAll);
 
                 Vector3[] destinationVertices = textInfo.meshInfo[materialIndex].vertices;
                 Vector3[] sourceVertices = cachedMeshInfo[materialIndex].vertices;
@@ -292,11 +307,11 @@ namespace ScenarioController
                 destinationVertices[vertexIndex + 3] = matrix.MultiplyPoint3x4(sourceVertices[vertexIndex + 3] - offset) + offset;
             }
 
-            if (animationData.useColorAlphaAnimation)
+            if (nowAnimationData.UseColorAlphaAnimation)
             {
                 Color32[] destinationColors = textInfo.meshInfo[materialIndex].colors32;
 
-                float animColorAlpha = animationData.colorAlphaAnimation.Evaluate(time);
+                float animColorAlpha = nowAnimationData.ColorAlphaAnimation.Evaluate(time);
 
                 //ここで色を保管する必要がある
                 //(１つ変更したら全部リセットされる実装っぽい?)

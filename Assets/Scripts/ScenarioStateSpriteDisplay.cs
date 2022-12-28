@@ -11,36 +11,19 @@ using ScenarioController;
 [RequireComponent(typeof(Image))]
 public class ScenarioStateSpriteDisplay : MonoBehaviour
 {
-    public ScenarioDisplayBase scenarioDisplay;
-    Image image;
-    int beforeScenarioIndex = -1;
+    [SerializeField] private ScenarioDisplayBase _scenarioDisplay;
+    private Image _image;
 
-    void Start()
+    private void Start()
     {
-        image = GetComponent<Image>();
-        image.enabled = false;
+        _image = GetComponent<Image>();
+        _scenarioDisplay.ScenarioStateChangeEvent += OnScenarioStateChange;
     }
 
-    void Update()
+    private void OnScenarioStateChange(ScenarioDisplayState state)
     {
-        //再生しているScenarioが変わった時
-        if(beforeScenarioIndex != scenarioDisplay.scenarioIndex)
-        {
-            try
-            {
-                //現在再生しているScenarioからImageを取得する
-                image.sprite = scenarioDisplay.nowScenario.stateData.stateSprite;
-
-                if (image.sprite == null) image.enabled = false;
-                else image.enabled = true;
-            }
-            catch
-            {
-                image.sprite = null;
-                image.enabled = false;
-            }
-
-            beforeScenarioIndex = scenarioDisplay.scenarioIndex;
-        }
+        ScenarioData scenario = _scenarioDisplay.currentScenario;
+        CharacterStateData stateData = scenario.StateData;
+        _image.sprite = stateData ? stateData.StateSprite : null;
     }
 }
