@@ -12,29 +12,19 @@ using ScenarioController;
 [RequireComponent(typeof(TMP_Text))]
 public class ScenarioStateNameDisplay : MonoBehaviour
 {
-    public ScenarioDisplayBase scenarioDisplay;
+    [SerializeField] private ScenarioDisplayBase _scenarioDisplay;
+    private TMP_Text _text;
 
-    TMP_Text text;
-    int beforeScenarioIndex = -1;
-
-    void Start()
+    private void Start()
     {
-        text = GetComponent<TMP_Text>();
+        _text = GetComponent<TMP_Text>();
+        _scenarioDisplay.ScenarioStateChangeEvent += OnScenarioStateChange;
     }
-
-    void Update()
+    
+    private void OnScenarioStateChange(ScenarioDisplayState state)
     {
-        //再生しているScenarioが変わった時
-        if(beforeScenarioIndex != scenarioDisplay.scenarioIndex)
-        {
-            try
-            {
-                //現在再生しているScenarioからStateDataの名前を取得する
-                text.text = scenarioDisplay.nowScenario.stateData.ParentAsset.name;
-            }
-            catch { }
-
-            beforeScenarioIndex = scenarioDisplay.scenarioIndex;
-        }
+        ScenarioData scenario = _scenarioDisplay.currentScenario;
+        CharacterStateData stateData = scenario.StateData;
+        _text.text = stateData ? stateData.ParentAsset.name : null;
     }
 }

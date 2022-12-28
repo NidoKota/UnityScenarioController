@@ -1,6 +1,4 @@
-﻿//変数を使っていない警告を無理やり切る
-#pragma warning disable 0414
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,22 +11,16 @@ namespace ScenarioController
     [Serializable]
     public class ScenarioInput
     {
-        public ScenarioDisplayBase scenarioDisplayBase;
+        [field: SerializeField] public ScenarioDisplayBase ScenarioDisplayBase { get; private set; }
 
-        public List<Scenario> scenarios = new List<Scenario>();
+        [field: SerializeField] public List<ScenarioData> Scenarios { get; private set; }
 
         /// <summary>
-        /// 登録されたScenarioDisplayBaseでScenarioの再生を始める(PlayableAssetの場合は使えない)
+        /// 登録されたScenarioDisplayBaseでScenarioの再生を始める
         /// </summary>
         public void PlayScenario()
         {
-            scenarioDisplayBase.PlayScenario(scenarios);
+            ScenarioDisplayBase.PlayScenario(Scenarios);
         }
-
-#if UNITY_EDITOR
-        //Editor上で使う情報
-        //Property全体を表示するか
-        [SerializeField] bool display = true;
-#endif
     }
 }

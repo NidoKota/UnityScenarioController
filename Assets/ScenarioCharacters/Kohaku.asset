@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8300588759630859973
+--- !u!114 &-9140051270551000232
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
-  m_Name: Surprise
+  m_Script: {fileID: 11500000, guid: cc34e3a09dd67d54e915355fa38ad16c, type: 3}
+  m_Name: Damage
   m_EditorClassIdentifier: 
-  _ParentAsset: {fileID: 11400000}
-  stateSprite: {fileID: 8734201493968222646, guid: e8b10b81edfdf47cfb22cddd4867a9b3,
+  <ParentAsset>k__BackingField: {fileID: 11400000}
+  <StateSprite>k__BackingField: {fileID: 8734201493968222646, guid: 34a8bffb685fb4801a290f3b5db202ae,
     type: 3}
---- !u!114 &-6757023668974638238
+--- !u!114 &-6311478545866111647
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -24,13 +24,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
-  m_Name: CloseEyes
+  m_Script: {fileID: 11500000, guid: cc34e3a09dd67d54e915355fa38ad16c, type: 3}
+  m_Name: Laugh
   m_EditorClassIdentifier: 
-  _ParentAsset: {fileID: 11400000}
-  stateSprite: {fileID: 8734201493968222646, guid: 3b70603c65d2d4858898855f1385b441,
+  <ParentAsset>k__BackingField: {fileID: 11400000}
+  <StateSprite>k__BackingField: {fileID: 8734201493968222646, guid: f183a04670fef48f9bccf4b2d4dffdc1,
     type: 3}
---- !u!114 &-4542096426808468291
+--- !u!114 &-2728945605223628734
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -39,26 +39,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
-  m_Name: Angry
+  m_Script: {fileID: 11500000, guid: cc34e3a09dd67d54e915355fa38ad16c, type: 3}
+  m_Name: Suprise
   m_EditorClassIdentifier: 
-  _ParentAsset: {fileID: 11400000}
-  stateSprite: {fileID: 8734201493968222646, guid: aabe8f867a024444bb47b2479109d4ee,
-    type: 3}
---- !u!114 &-253073051782481504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
-  m_Name: Normal
-  m_EditorClassIdentifier: 
-  _ParentAsset: {fileID: 11400000}
-  stateSprite: {fileID: 8734201493968222646, guid: 2925519c6104546b8afe13164cc0ff95,
+  <ParentAsset>k__BackingField: {fileID: 11400000}
+  <StateSprite>k__BackingField: {fileID: 8734201493968222646, guid: e8b10b81edfdf47cfb22cddd4867a9b3,
     type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
@@ -69,17 +54,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc50cbf16097b634cb794498b091a0ca, type: 3}
+  m_Script: {fileID: 11500000, guid: ba3563a6d9e125444ad9afa3d06c5bcd, type: 3}
   m_Name: Kohaku
   m_EditorClassIdentifier: 
-  _SubAssets:
-  - {fileID: 1100591661285192569}
-  - {fileID: 7893874116674641911}
-  - {fileID: -8300588759630859973}
-  - {fileID: -4542096426808468291}
-  - {fileID: -6757023668974638238}
-  - {fileID: -253073051782481504}
---- !u!114 &1100591661285192569
+  <SubAssets>k__BackingField:
+  - {fileID: 7411603562559918340}
+  - {fileID: 2569134597609326299}
+  - {fileID: -6311478545866111647}
+  - {fileID: 5966411321656978518}
+  - {fileID: -9140051270551000232}
+  - {fileID: -2728945605223628734}
+  <DisplayName>k__BackingField: Kohaku
+--- !u!114 &2569134597609326299
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -88,13 +74,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
-  m_Name: Pain
+  m_Script: {fileID: 11500000, guid: cc34e3a09dd67d54e915355fa38ad16c, type: 3}
+  m_Name: CloseEyes
   m_EditorClassIdentifier: 
-  _ParentAsset: {fileID: 11400000}
-  stateSprite: {fileID: 8734201493968222646, guid: 34a8bffb685fb4801a290f3b5db202ae,
+  <ParentAsset>k__BackingField: {fileID: 11400000}
+  <StateSprite>k__BackingField: {fileID: 8734201493968222646, guid: 3b70603c65d2d4858898855f1385b441,
     type: 3}
---- !u!114 &7893874116674641911
+--- !u!114 &5966411321656978518
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,9 +89,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3015bc376cd9aac4ba80011ae7cb3951, type: 3}
-  m_Name: Laugh
+  m_Script: {fileID: 11500000, guid: cc34e3a09dd67d54e915355fa38ad16c, type: 3}
+  m_Name: Normal
   m_EditorClassIdentifier: 
-  _ParentAsset: {fileID: 11400000}
-  stateSprite: {fileID: 8734201493968222646, guid: f183a04670fef48f9bccf4b2d4dffdc1,
+  <ParentAsset>k__BackingField: {fileID: 11400000}
+  <StateSprite>k__BackingField: {fileID: 8734201493968222646, guid: 2925519c6104546b8afe13164cc0ff95,
+    type: 3}
+--- !u!114 &7411603562559918340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc34e3a09dd67d54e915355fa38ad16c, type: 3}
+  m_Name: Angry
+  m_EditorClassIdentifier: 
+  <ParentAsset>k__BackingField: {fileID: 11400000}
+  <StateSprite>k__BackingField: {fileID: 8734201493968222646, guid: aabe8f867a024444bb47b2479109d4ee,
     type: 3}

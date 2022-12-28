@@ -6,6 +6,8 @@ using TMPro;
 
 namespace ScenarioController
 {
+    // TODO リファクタリング
+
     /// <summary>
     /// ScenarioDisplayとScenarioDisplayLightの基底クラス
     /// </summary>
@@ -34,7 +36,12 @@ namespace ScenarioController
         /// <summary>
         /// 次のScenarioに移行する時にフェードさせるか
         /// </summary>
-        public bool nextScenarioFadeOut;
+        public bool nextScenarioFadeOut = true;
+
+        /// <summary>
+        /// 次のScenarioに移行するフェードの時間
+        /// </summary>
+        public float nextScenarioFadeTime = 0.5f;
 
         /// <summary>
         /// 次のScenarioに移行するまでの待機時間
@@ -56,6 +63,12 @@ namespace ScenarioController
         /// </summary>
         public event Action<ScenarioDisplayState> ScenarioStateChangeEvent;
 
+
+        /// <summary>
+        /// Scenarioを途中でカットしたときに呼び出されるEvent
+        /// </summary>
+        public event Action ScenarioCutEvent;
+
         /// <summary>
         /// 現在の状態
         /// </summary>
@@ -64,22 +77,24 @@ namespace ScenarioController
         /// <summary>
         /// 現在処理されているScenario
         /// </summary>
-        public Scenario nowScenario { get; protected set; }
+        public ScenarioData currentScenario { get; protected set; }
+
+        public IEnumerable<ScenarioData> scenarios { get; protected set; }
 
         /// <summary>
-        /// scenarios中のnowScenarioのIndex
+        /// scenarios中のcurrentScenarioのIndex
         /// </summary>
         public int scenarioIndex { get; protected set; }
 
         /// <summary>
         /// 複数のScenarioの表示を開始
         /// </summary>
-        public abstract void PlayScenario(IEnumerable<Scenario> scenarios);
+        public abstract void PlayScenario(IEnumerable<ScenarioData> scenarios);
 
         /// <summary>
         /// 複数のScenarioの表示を開始
         /// </summary>
-        public abstract void PlayScenario(params Scenario[] scenarios);
+        public abstract void PlayScenario(params ScenarioData[] scenarios);
 
         /// <summary>
         /// Scenarioの表示を強制停止する
@@ -96,6 +111,10 @@ namespace ScenarioController
             ScenarioStateChangeEvent?.Invoke(state);
         }
 
+        protected void ScenarioCut()
+        {
+            ScenarioCutEvent?.Invoke();
+        }
     }
 
     public enum ScenarioDisplayState
@@ -104,10 +123,17 @@ namespace ScenarioController
         /// 表示されていない状態
         /// </summary>
         Hide,
+
         /// <summary>
         /// 表示されている状態
         /// </summary>
         Work,
+
+        /// <summary>
+        /// 次への移行を開始した状態
+        /// </summary>
+        Next,
+
         /// <summary>
         /// 次のScenarioへの待機状態
         /// </summary>

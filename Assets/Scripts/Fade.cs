@@ -21,7 +21,7 @@ public class Fade
     /// </summary>
     public static Image GetDefaultImage()
     {
-        return GameObject.Find("ForwerdCamCanvas/FadeImage").GetComponent<Image>();
+        return GameObject.Find("ForwardCamCanvas/FadeImage").GetComponent<Image>();
     }
 
     //強制停止できるようにdisposableを保管する
